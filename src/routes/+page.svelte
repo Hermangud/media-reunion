@@ -4,21 +4,21 @@
 	import PaymentInfo from '$lib/components/PaymentInfo.svelte';
 	import StatusChecker from '$lib/components/StatusChecker.svelte';
 
+	let registrationComplete = $state(false);
+	let registeredKid = $state<number | null>(null);
+
 	// Definer informasjonen om arrangementet her
 	const eventDetails = {
 		name: 'Media Reunion 2025',
 		location: 'Mindre-alvs vei 11, 1672 Kråkerøy',
-		date: 'Lørdag 16. august 2025, kl. 18:00'
+		date: '2025-08-16T15:00:00', // ISO-format for ICS
+		displayDate: 'Lørdag 16. august 2025, kl. 17:00' // For visning
 	};
 
-	// Bruker Svelte 5 Runes for reaktivitet
-	let registrationComplete = $state(false);
-
 	// Denne funksjonen sendes som en prop til RegistrationForm
-	function handleRegistrationSuccess() {
+	function handleRegistrationSuccess(kidNumber: number) {
 		registrationComplete = true;
-		// Scroller til toppen for å vise suksessmelding
-		window.scrollTo({ top: 0, behavior: 'smooth' });
+		registeredKid = kidNumber;
 	}
 </script>
 
@@ -30,7 +30,12 @@
 	/>
 </svelte:head>
 
-<Header eventName={eventDetails.name} location={eventDetails.location} date={eventDetails.date} />
+<Header
+	eventName={eventDetails.name}
+	location={eventDetails.location}
+	date={eventDetails.date}
+	displayDate={eventDetails.displayDate}
+/>
 
 {#if registrationComplete}
 	<div class="alert alert-success mt-4" role="alert">
@@ -39,12 +44,12 @@
 			Vi har mottatt dine detaljer. Vennligst fullfør betalingen nedenfor for å sikre din plass.
 		</p>
 	</div>
-	<PaymentInfo />
+	<PaymentInfo kidNumber={registeredKid} />
 {:else}
 	<main>
 		<section id="registration">
 			<h2 class="mb-3">Meld deg på her</h2>
-			<RegistrationForm on:success={handleRegistrationSuccess} />
+			<RegistrationForm onSuccess={handleRegistrationSuccess} />
 		</section>
 	</main>
 {/if}
