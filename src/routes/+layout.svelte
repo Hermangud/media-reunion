@@ -1,3 +1,12 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		document.body.classList.add('bg-dark', 'bg-gradient');
+		document.body.setAttribute('data-bs-theme', 'dark');
+	});
+</script>
+
 <svelte:head>
 	<link
 		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"

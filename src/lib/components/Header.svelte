@@ -6,6 +6,14 @@
 <header class="text-center py-4 mb-4 border-bottom">
 	<h1 class="display-4">{eventName}</h1>
 	<p class="lead text-muted">
-		📍 {location} &nbsp;&bull;&nbsp; 🗓️ {date}
+		📍
+		<a
+			href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			{location}
+		</a>
+		&nbsp;&bull;&nbsp; 🗓️ {date}
 	</p>
 </header>
