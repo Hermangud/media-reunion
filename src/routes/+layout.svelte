@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	let isMounted = $state(false);
+	let { children } = $props();
+
 	onMount(() => {
 		document.body.classList.add('bg-dark', 'bg-gradient');
 		document.body.setAttribute('data-bs-theme', 'dark');
+		isMounted = true;
 	});
 </script>
 
@@ -22,6 +26,8 @@
 	></script>
 </svelte:head>
 
-<div class="container mt-25">
-	<slot />
-</div>
+{#if isMounted}
+	<div class="container py-4">
+		{@render children?.()}
+	</div>
+{/if}

@@ -34,57 +34,86 @@
 		const name = formData.get('name') as string;
 		const email = formData.get('email') as string;
 
-		// ... din validering for om filer er valgt ...
+		// Sjekker om brukeren har lastet opp filer
+		if (filesToUpload.length > 0) {
+			// ----- LOGIKK FOR PÅMELDING MED BILDER -----
 
-		// STEG 1: Kall den nye database-funksjonen
-		const { data: newKid, error: rpcError } = await supabase.rpc('register_guest_and_get_kid', {
-			guest_name: name,
-			guest_email: email
-		});
+			const uploadedFilePaths: string[] = [];
+			try {
+				const uploadPromises = filesToUpload.map((file) => {
+					const filePath = `temp/${crypto.randomUUID()}-${file.name}`;
+					uploadedFilePaths.push(filePath);
+					return supabase.storage.from('media-reunion-pictures').upload(filePath, file);
+				});
 
-		if (rpcError) {
-			console.error('Feil ved kall av RPC-funksjon:', rpcError);
-			messageType = 'error';
-			// Sjekk om feilen er pga. duplikat e-post
-			if (rpcError.message.includes('duplicate key')) {
-				feedbackMessage = 'Denne e-posten er allerede registrert.';
-			} else {
-				feedbackMessage = 'En ukjent feil oppstod: ' + rpcError.message;
-			}
-			isLoading = false;
-			return;
-		}
-
-		// STEG 2: Last opp filer (bruk newKid som mappenavn)
-		for (const file of filesToUpload) {
-			// Lager en unik filsti for å unngå kollisjoner,
-			// og organiserer bilder under hver gjests unike ID.
-			const filePath = `/${name + file.name}`;
-
-			const { error: uploadError } = await supabase.storage
-				.from('media-reunion-pictures') // Navnet på din bucket
-				.upload(filePath, file);
-
-			// Håndterer en eventuell feil under opplastingen
-			if (uploadError) {
-				console.error('Opplastingsfeil:', uploadError);
+				const uploadResults = await Promise.all(uploadPromises);
+				const firstError = uploadResults.find((result) => result.error);
+				if (firstError) throw firstError.error;
+			} catch (error) {
+				// Opprydding ved feil
+				if (uploadedFilePaths.length > 0) {
+					await supabase.storage.from('media-reunion-pictures').remove(uploadedFilePaths);
+				}
 				messageType = 'error';
-				feedbackMessage = `Feil ved opplasting av ${file.name}.`;
+				feedbackMessage = 'En feil oppstod under filopplasting. Prøv igjen.';
 				isLoading = false;
-				return; // Avbryter prosessen hvis én fil feiler
+				return;
 			}
+
+			const { data: newId, error: rpcError } = await supabase.rpc('register_guest_and_get_kid', {
+				guest_name: name,
+				guest_email: email
+			});
+
+			if (rpcError) {
+				// Opprydding ved databasefeil
+				await supabase.storage.from('media-reunion-pictures').remove(uploadedFilePaths);
+				// ... din eksisterende feilhåndtering ...
+				isLoading = false;
+				return;
+			}
+
+			// Flytt filer fra temp til endelig mappe
+			for (const tempPath of uploadedFilePaths) {
+				const fileName = tempPath.split('/')[1];
+				const newPath = `${newId}/${fileName}`;
+				await supabase.storage.from('media-reunion-pictures').move(tempPath, newPath);
+			}
+
+			// Suksessmelding for påmelding MED bilder
+			messageType = 'success';
+			feedbackMessage = 'Takk! Din påmelding og bilder er mottatt. 👍';
+			if (onSuccess) onSuccess(newId);
+		} else {
+			// ----- LOGIKK FOR PÅMELDING UTEN BILDER -----
+
+			const { data: newId, error: rpcError } = await supabase.rpc('register_guest_and_get_kid', {
+				guest_name: name,
+				guest_email: email
+			});
+
+			if (rpcError) {
+				// Standard feilhåndtering for duplikat e-post etc.
+				messageType = 'error';
+				if (rpcError.message.includes('duplicate key')) {
+					feedbackMessage = 'Denne e-posten er allerede registrert.';
+				} else {
+					feedbackMessage = 'En ukjent databasefeil oppstod.';
+				}
+				isLoading = false;
+				return;
+			}
+
+			// UNIK suksessmelding for påmelding UTEN bilder
+			messageType = 'success';
+			feedbackMessage = 'Takk for din påmelding! Du lastet ikke opp noen bilder.';
+			if (onSuccess) onSuccess(newId);
 		}
 
-		// STEG 3: Alt var vellykket
+		// Felles opprydding til slutt
 		isLoading = false;
-		messageType = 'success';
-		feedbackMessage = 'Takk! Din påmelding er mottatt. 👍';
 		form.reset();
 		filesToUpload = [];
-
-		if (onSuccess) {
-			onSuccess(newKid); // Send den nye KID-en til +page.svelte
-		}
 	}
 </script>
 
