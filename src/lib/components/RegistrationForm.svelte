@@ -23,7 +23,7 @@
 	}
 </script>
 
-<form on:submit={handleFormSubmit}>
+<form onsubmit={handleFormSubmit}>
 	<div class="mb-3">
 		<label for="name" class="form-label">Fullt navn</label>
 		<input type="text" id="name" name="name" class="form-control" required disabled={isLoading} />
@@ -49,7 +49,7 @@
 			name="images"
 			multiple
 			class="form-control"
-			on:change={handleFileChange}
+			onchange={handleFileChange}
 			disabled={isLoading}
 			accept="image/*"
 		/>
