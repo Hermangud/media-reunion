@@ -1,17 +1,11 @@
 <script lang="ts">
-	// All din eksisterende logikk forblir den samme
-	import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-
-	const supabaseUrl: string = import.meta.env.VITE_SUPABASE_URL;
-	const supabaseKey: string = import.meta.env.VITE_SUPABASE_ANON_KEY;
-	const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
+	import { supabase } from '$lib/supabaseClient';
 
 	let emailToSearch = $state<string>('');
 	let isLoading = $state<boolean>(false);
 	let searchStatus = $state<'idle' | 'found' | 'not_found'>('idle');
 	let errorMessage = $state<string>('');
 	let paidStatus = $state<boolean | null>(null);
-	let kidNumber = $state<number | null>(null);
 
 	async function handleStatusCheck(): Promise<void> {
 		if (!emailToSearch) return;
@@ -20,11 +14,10 @@
 		searchStatus = 'idle';
 		errorMessage = '';
 		paidStatus = null; // Nullstill betalingsstatus ved nytt søk
-		kidNumber = null; // Nullstill kid-nummer ved nytt søk
 		try {
 			const { data, error } = await supabase
 				.from('public_guest_status') // Spør mot det sikre viewet
-				.select('paid, kid') // Henter betalingsstatus
+				.select('paid') // Henter betalingsstatus
 				.eq('email', emailToSearch)
 				.single();
 
@@ -34,7 +27,6 @@
 				searchStatus = 'found';
 				// NY: Lagrer betalingsstatus fra svaret
 				paidStatus = data.paid;
-				kidNumber = data.kid; // Lagrer kid-nummeret
 			}
 		} catch (error: any) {
 			errorMessage = 'En teknisk feil oppstod. Prøv igjen.';

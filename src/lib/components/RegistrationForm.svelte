@@ -1,12 +1,7 @@
 <script lang="ts">
-	import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+	import { supabase } from '$lib/supabaseClient';
 
 	let { onSuccess }: { onSuccess: (kid: number) => void } = $props();
-
-	// Henter Supabase-nøklene sikkert fra miljøvariabler
-	const supabaseUrl: string = import.meta.env.VITE_SUPABASE_URL;
-	const supabaseKey: string = import.meta.env.VITE_SUPABASE_ANON_KEY;
-	const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
 	// Definerer state med TypeScript-typer
 	let filesToUpload = $state<File[]>([]);
@@ -37,7 +32,7 @@
 
 			if (filesToUpload.length > 0) {
 				const uploadPromises = filesToUpload.map((file) => {
-					const filePath = `${crypto.randomUUID()}-${file.name}`;
+					const filePath = `${crypto.randomUUID()}-${name}-${file.name}`;
 					return supabase.storage.from('media-reunion-pictures').upload(filePath, file);
 				});
 				const uploadResults = await Promise.all(uploadPromises);
