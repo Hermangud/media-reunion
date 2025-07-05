@@ -38,7 +38,7 @@
 </script>
 
 <header class="text-center py-4 mb-4 border-bottom">
-	<h1 class="display-4">{eventName}</h1>
+	<h1 class="display-1">{eventName}</h1>
 	<p class="lead text-muted">
 		📍
 		<a
