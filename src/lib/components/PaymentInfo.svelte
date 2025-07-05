@@ -1,4 +1,5 @@
 <script lang="ts">
+	import qrVipps from '$lib/assets/qr-vipps.svg';
 	let { kidNumber }: { kidNumber: number | null } = $props();
 </script>
 
@@ -10,7 +11,7 @@
 				<p class="card-text">
 					Send <strong>250 kr</strong> kr til <strong>978 18 141</strong>
 				</p>
-				<img class="w-50" src="/qr-vipps.svg" alt="QR kode til Vipps" />
+				<img class="w-50" src={qrVipps} alt="QR kode til Vipps" />
 			</div>
 		</div>
 	</div>
