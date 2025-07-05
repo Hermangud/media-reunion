@@ -5,36 +5,37 @@ name: Deploy SvelteKit to GitHub Pages
 on:
   push:
     branches:
-      - main # Trigger workflowen når det pushes til 'main'-grenen
+      - main
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # Kjører på en Ubuntu virtuell maskin
+    runs-on: ubuntu-latest
 
     permissions:
-      contents: write # Gi skrive-tilgang for å pushe til gh-pages grenen
+      contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Sjekk ut koden fra ditt repo
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Eller den Node.js-versjonen du bruker
+          node-version: '20'
 
       - name: Install dependencies
-        run: npm install # Installer prosjektavhengigheter
+        run: npm install
 
       - name: Build SvelteKit project
-        run: npm run build # Bygg SvelteKit-prosjektet ditt
+        run: npm run build
         env:
-          # Hvis du bruker paths.base i svelte.config.js, sørg for at NODE_ENV er satt til 'production'
           NODE_ENV: production
+          # Legg til Supabase variablene her:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub Pages token, automatisk tilgjengelig
-          publish_dir: ./build # Mappen som skal publiseres (der Svelte bygger til)
-          force_orphan: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
