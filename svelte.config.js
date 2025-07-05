@@ -10,7 +10,7 @@ const config = {
 			// Standardinnstillinger
 			pages: 'build',
 			assets: 'build',
-			fallback: ' 404.html',
+			fallback: 'index.html',
 			precompress: false,
 			strict: true
 		})
