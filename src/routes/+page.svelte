@@ -3,6 +3,7 @@
 	import RegistrationForm from '$lib/components/RegistrationForm.svelte';
 	import PaymentInfo from '$lib/components/PaymentInfo.svelte';
 	import StatusChecker from '$lib/components/StatusChecker.svelte';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 
 	let registrationComplete = $state(false);
 	let registeredKid = $state<number | null>(null);
@@ -54,6 +55,7 @@
 {/if}
 
 <hr class="my-5" />
+<ImageUpload <hr class="my-5" />
 
 <section id="status-check" class="mb-5">
 	<h2 class="mb-3">Sjekk din påmeldingsstatus</h2>

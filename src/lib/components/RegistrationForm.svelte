@@ -2,23 +2,10 @@
 	import { supabase } from '$lib/supabaseClient';
 
 	let { onSuccess }: { onSuccess: (kid: number) => void } = $props();
-
-	// Definerer state med TypeScript-typer
-	let filesToUpload = $state<File[]>([]);
 	let isLoading = $state<boolean>(false);
 	let feedbackMessage = $state<string>('');
 	let messageType = $state<'success' | 'error'>('success');
 
-	// Håndterer filvalg fra input-feltet
-	function handleFileChange(event: Event) {
-		const input = event.currentTarget as HTMLInputElement;
-		if (input.files) {
-			// Konverterer den spesielle FileList-typen til en vanlig File[] array
-			filesToUpload = [...input.files];
-		}
-	}
-
-	// Håndterer innsending av skjemaet
 	async function handleFormSubmit(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		isLoading = true;
@@ -30,29 +17,16 @@
 			const name = formData.get('name') as string;
 			const email = formData.get('email') as string;
 
-			if (filesToUpload.length > 0) {
-				const uploadPromises = filesToUpload.map((file) => {
-					const filePath = `${crypto.randomUUID()}-${name}-${file.name}`;
-					return supabase.storage.from('media-reunion-pictures').upload(filePath, file);
-				});
-				const uploadResults = await Promise.all(uploadPromises);
-				const uploadError = uploadResults.find((result) => result.error)?.error;
-				if (uploadError) throw uploadError;
-			}
-
 			const { data: newKid, error: rpcError } = await supabase.rpc('register_guest_and_get_kid', {
 				guest_name: name,
 				guest_email: email
 			});
 			if (rpcError) throw rpcError;
 
-			// Alt var vellykket
 			messageType = 'success';
 			feedbackMessage = 'Takk, din påmelding er mottatt!';
 
-			// Opprydding skjer kun ved suksess
 			form.reset();
-			filesToUpload = [];
 
 			if (onSuccess) {
 				onSuccess(newKid);
@@ -66,7 +40,6 @@
 			}
 			console.error('Feil i påmelding:', error);
 		} finally {
-			// isLoading settes alltid til false, uansett resultat
 			isLoading = false;
 		}
 	}
@@ -87,24 +60,6 @@
 			class="form-control"
 			required
 			disabled={isLoading}
-		/>
-	</div>
-
-	<div class="mb-3">
-		<label for="images" class="form-label">Last opp bilder (valgfritt)</label>
-		<p class="form-text">
-			Bildene vil bli brukt til bildekarusell under kvelden. Del dine beste minnner fra tiden vår på
-			Glemmen!
-		</p>
-		<input
-			type="file"
-			id="images"
-			name="images"
-			multiple
-			class="form-control"
-			onchange={handleFileChange}
-			disabled={isLoading}
-			accept="image/*"
 		/>
 	</div>
 
