@@ -26,11 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Clean build directory
+        run: rm -rf build || true
+
       - name: Build SvelteKit project
         run: npm run build
         env:
           NODE_ENV: production
-          # Legg til Supabase variablene her:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
@@ -39,3 +41,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+          force_orphan: true
