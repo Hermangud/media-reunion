@@ -5,7 +5,10 @@
 	import StatusChecker from '$lib/components/StatusChecker.svelte';
 
 	let registrationComplete = $state(false);
-	let registeredKid = $state<number | null>(null);
+
+	function handleRegistrationSuccess() {
+		registrationComplete = true;
+	}
 
 	// Definer informasjonen om arrangementet her
 	const eventDetails = {
@@ -14,12 +17,6 @@
 		date: '2025-08-16T15:00:00', // ISO-format for ICS
 		displayDate: 'Lørdag 16. august 2025, kl. 17:00' // For visning
 	};
-
-	// Denne funksjonen sendes som en prop til RegistrationForm
-	function handleRegistrationSuccess(kidNumber: number) {
-		registrationComplete = true;
-		registeredKid = kidNumber;
-	}
 </script>
 
 <svelte:head>
@@ -44,7 +41,7 @@
 			Vi har mottatt dine detaljer. Vennligst fullfør betalingen nedenfor for å sikre din plass.
 		</p>
 	</div>
-	<PaymentInfo kidNumber={registeredKid} />
+	<PaymentInfo kidNumber={Math.random()} />
 {:else}
 	<main>
 		<section id="registration">
