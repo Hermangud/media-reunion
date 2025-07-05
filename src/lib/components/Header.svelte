@@ -1,14 +1,17 @@
 <script lang="ts">
-	export let eventName: string;
-	export let location: string;
-	export let date: string; // ISO-format
-	export let displayDate: string; // Lesbar dato
+	let {
+		eventName,
+		location,
+		date,
+		displayDate
+	}: { eventName: string; location: string; date: string; displayDate: string } = $props();
 
-	function downloadICS() {
-		// Forventet format: 2025-08-16T18:00:00
+	function downloadICS(event: MouseEvent) {
+		event.preventDefault(); // Hindrer lenken i å navigere
+
 		const start = date.replace(/[-:]/g, '').slice(0, 15) + 'Z';
 		const endDate = new Date(date);
-		endDate.setHours(endDate.getHours() + 2);
+		endDate.setHours(endDate.getHours() + 4); // Setter festen til å vare i 4 timer
 		const end = endDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
 
 		const icsContent = [
@@ -19,20 +22,17 @@
 			`DTSTART:${start}`,
 			`DTEND:${end}`,
 			`LOCATION:${location}`,
-			'DESCRIPTION:Legg til i kalender',
+			`DESCRIPTION:Se deg på ${eventName}!`,
 			'END:VEVENT',
 			'END:VCALENDAR'
 		].join('\r\n');
 
 		const blob = new Blob([icsContent], { type: 'text/calendar' });
 		const url = URL.createObjectURL(blob);
-
 		const a = document.createElement('a');
 		a.href = url;
 		a.download = `${eventName}.ics`;
-		document.body.appendChild(a);
 		a.click();
-		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 	}
 </script>
@@ -48,8 +48,8 @@
 		>
 			{location}
 		</a>
-		&nbsp;&bull;&nbsp; 🗓️
-		<a href="#" on:click|preventDefault={downloadICS} title="Last ned kalenderfil">
+		&nbsp;•&nbsp; 🗓️
+		<a href="#" onclick={downloadICS} title="Legg til i kalender">
 			{displayDate}
 		</a>
 	</p>

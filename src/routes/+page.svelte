@@ -5,9 +5,11 @@
 	import StatusChecker from '$lib/components/StatusChecker.svelte';
 
 	let registrationComplete = $state(false);
+	let registeredKid = $state<number | null>(null);
 
-	function handleRegistrationSuccess() {
+	function handleRegistrationSuccess(kid: number) {
 		registrationComplete = true;
+		registeredKid = kid;
 	}
 
 	// Definer informasjonen om arrangementet her
@@ -41,7 +43,7 @@
 			Vi har mottatt dine detaljer. Vennligst fullfør betalingen nedenfor for å sikre din plass.
 		</p>
 	</div>
-	<PaymentInfo kidNumber={Math.random()} />
+	<PaymentInfo kidNumber={registeredKid} />
 {:else}
 	<main>
 		<section id="registration">

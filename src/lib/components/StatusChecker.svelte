@@ -11,6 +11,7 @@
 	let searchStatus = $state<'idle' | 'found' | 'not_found'>('idle');
 	let errorMessage = $state<string>('');
 	let paidStatus = $state<boolean | null>(null);
+	let kidNumber = $state<number | null>(null);
 
 	async function handleStatusCheck(): Promise<void> {
 		if (!emailToSearch) return;
@@ -19,11 +20,11 @@
 		searchStatus = 'idle';
 		errorMessage = '';
 		paidStatus = null; // Nullstill betalingsstatus ved nytt søk
-
+		kidNumber = null; // Nullstill kid-nummer ved nytt søk
 		try {
 			const { data, error } = await supabase
 				.from('public_guest_status') // Spør mot det sikre viewet
-				.select('paid') // Henter betalingsstatus
+				.select('paid, kid') // Henter betalingsstatus
 				.eq('email', emailToSearch)
 				.single();
 
@@ -33,6 +34,7 @@
 				searchStatus = 'found';
 				// NY: Lagrer betalingsstatus fra svaret
 				paidStatus = data.paid;
+				kidNumber = data.kid; // Lagrer kid-nummeret
 			}
 		} catch (error: any) {
 			errorMessage = 'En teknisk feil oppstod. Prøv igjen.';
@@ -85,7 +87,7 @@
 			</div>
 		{:else}
 			<div class="alert alert-warning mt-3">
-				⚠️ Ja, vi har mottatt din påmelding, men mangler registrert betaling.
+				⚠️ Ja, vi har mottatt din påmelding, men mangler registrert betaling.{kidNumber}
 			</div>
 		{/if}
 	{/if}
