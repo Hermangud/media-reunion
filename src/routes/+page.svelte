@@ -53,10 +53,9 @@
 		</section>
 	</main>
 {/if}
-
 <hr class="my-5" />
-<ImageUpload <hr class="my-5" />
-
+<ImageUpload />
+<hr class="my-5" />
 <section id="status-check" class="mb-5">
 	<h2 class="mb-3">Sjekk din påmeldingsstatus</h2>
 	<StatusChecker />

@@ -10,7 +10,7 @@
 				<p class="card-text">
 					Send <strong>250 kr</strong> kr til <strong>978 18 141</strong>
 				</p>
-				<img class="w-50" src="/static/qr-vipps.svg" alt="QR kode til Vipps" />
+				<img class="w-50" src="/qr-vipps.svg" alt="QR kode til Vipps" />
 			</div>
 		</div>
 	</div>
@@ -20,7 +20,7 @@
 			<div class="card-body">
 				<h3 class="card-title">Bankoverføring</h3>
 				<p class="card-text">Beløp: <strong>250 kr</strong></p>
-				<p class="card-text">Kontonummer: <strong>4214 47 45 374</strong></p>
+				<p class="card-text">Kontonummer: <strong>4214 47 45374</strong></p>
 				<p class="card-text">
 					KID: <strong>{kidNumber}</strong>
 				</p>
