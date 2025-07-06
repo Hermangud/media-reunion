@@ -45,7 +45,7 @@
 <section id="image-upload" class="mb-5">
 	<h2 class="mb-3">Last opp bilder</h2>
 	<p class="text-muted mb-3">
-		Bildene vil bli brukt til bildekarusell under kvelden. Del dine beste minnner fra tiden vår på
+		Bildene vil bli brukt til bildekarusell under kvelden. Del dine beste minner fra tiden vår på
 		Glemmen!
 	</p>
 	<input

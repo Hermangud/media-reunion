@@ -85,7 +85,8 @@
 			</div>
 		{:else}
 			<div class="alert alert-warning mt-3">
-				⚠️ Ja, vi har mottatt din påmelding, men mangler registrert betaling.
+				⚠️ Ja, vi har mottatt din påmelding, men mangler betaling. Det kan ta opptil 48 timer før
+				betalingen blir registrert.
 			</div>
 			<PaymentInfo {kidNumber} />
 		{/if}
